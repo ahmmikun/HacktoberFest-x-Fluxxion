@@ -73,9 +73,13 @@ try {
 }
 
 // Google AI Studio key (presence only)
+const isReal = (k) => Boolean(k && k.trim() && !/^your_.*_here$/i.test(k.trim()));
 const key = env.GOOGLE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY;
-if (key && !key.includes("your_google_ai_studio_api_key")) ok("GOOGLE_AI_API_KEY configured");
-else warn("GOOGLE_AI_API_KEY not set — Hosted mode will degrade to the deterministic report");
+const groqKey = env.GROQ_API_KEY || process.env.GROQ_API_KEY;
+if (isReal(key)) ok("GOOGLE_AI_API_KEY configured");
+else warn("GOOGLE_AI_API_KEY not set — Hosted mode will use the Groq fallback if configured");
+if (isReal(groqKey)) ok(`GROQ_API_KEY configured (fallback model ${env.GROQ_MODEL || "openai/gpt-oss-120b"})`);
+else warn("GROQ_API_KEY not set — no hosted fallback when Google AI Studio fails");
 
 console.log(blocking ? `\n${blocking} blocking issue(s) found.\n` : "\nReady. Run: npm run dev\n");
 process.exit(blocking ? 1 : 0);
