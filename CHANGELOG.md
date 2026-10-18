@@ -14,7 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `reposage_requirements_specification.md`: personas, functional requirements (`FR-AUTH`, `FR-COLL`, `FR-DET`, `FR-COMP`, `FR-AI`, `FR-VER`, `FR-ACT`), non-functional requirements (`NFR-SEC`, `NFR-PERF`), and the acceptance criteria matrix.
   - `reposage_system_design_architecture.md`: monorepo architecture, the six backend modules (`GhCliBridge`, `EvidenceCollector`, `DeterministicEngine`, `EvidenceCompiler`, `GemmaOrchestrator`, `CitationVerifier`), GraphQL evidence query, scoring formula, shared Zod schemas, REST/SSE API, and the Next.js component hierarchy.
   - `reposage_technology_stack_setup_guide.md`: npm-workspaces layout, dependency versions, root `package.json` blueprint, environment template, and a reference `GhCliBridge` implementation.
-- **In progress**: implementation of `apps/web` (Next.js 15), `apps/api` (Express), and `packages/shared` (Zod contracts) against these specs.
+- **RepoSage v1.0.0 implementation** (npm workspaces):
+  - `packages/shared`: Zod contracts for rules, health reports, the Evidence Manifest, findings, telemetry, consensus, API requests, and SSE events.
+  - `apps/api` (Express 4): `gh` CLI bridge, GraphQL/REST evidence collector, 22-rule deterministic engine across 6 weighted dimensions, secret redactor, canonical SHA-256 Evidence Manifest compiler, Ollama (`gemma4:e4b`) and Google AI Studio (`gemma-4-26b-a4b-it`) clients with JSON-schema output, one schema-repair retry, citation verifier, Compare-mode consensus matrix, in-memory audit sessions with SSE replay, Markdown export, and confirmed `gh issue create`.
+  - `apps/web` (Next.js 15, React 19, Tailwind 4): Mission Control (preflight pills, guided `gh` setup, mode selector, repository browser), live audit workspace (pipeline stepper, health gauge and radar chart, rule table, findings board with quarantine toggle, finding cards with confirmed issue creation), Model Comparison Arena, and a sanitized Markdown report preview.
+  - `scripts/check-env.mjs` (`npm run preflight`), per-app `.env.example` files, and `tsconfig.base.json`.
+- **Documentation**: README, CONTRIBUTING, SECURITY, and SUPPORT updated to describe the implemented code: full rule table, API and SSE reference, configuration (`HOST`, `MAX_EVIDENCE_BYTES`, `LOG_LEVEL`), security controls, troubleshooting, and known limitations.
 
 ### Changed
 - **Project direction**: the repository now builds **RepoSage**, a local-first, evidence-grounded GitHub repository auditor using Gemma 4 E4B (Ollama, `gemma4:e4b`) and Gemma 4 26B (Google AI Studio, `gemma-4-26b-a4b-it`).
