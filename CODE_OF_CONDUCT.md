@@ -62,7 +62,6 @@ Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the project leadership responsible for enforcement:
 
 - **Primary Contact**: Salman Ahmad (`140977479+ahmmikun@users.noreply.github.com` / GitHub: [@ahmmikun](https://github.com/ahmmikun))
-- **Secondary / Project Team Contact**: `[MAINTAINER_EMAIL_PLACEHOLDER - Configure additional contact if desired]`
 
 All complaints will be reviewed and investigated promptly and fairly. All
 community leaders are obligated to respect the privacy and security of the

@@ -16,8 +16,8 @@ RepoSage was built for **MLH Hacktoberfest Hack Day Lahore × Fluxxion 2026** (O
 
 | Name | GitHub | Focus area |
 | :--- | :--- | :--- |
-| `[TEAM_MEMBER_NAME]` | `[@GITHUB_USERNAME]` | Documentation & specifications (`/docs`, README, governance) |
-| `[TEAM_MEMBER_NAME]` | `[@GITHUB_USERNAME]` | Implementation (`apps/api`, `apps/web`, `packages/shared`) |
+| **Salman Ahmad** | [@ahmmikun](https://github.com/ahmmikun) | Product specs (`/docs`) and implementation: `packages/shared` contracts, `apps/api` audit pipeline, `apps/web` dashboard, preflight script |
+| **Furqan Shahid** | [@furqanshahid089](https://github.com/furqanshahid089) | Documentation and governance: README, CONTRIBUTING, SECURITY, SUPPORT, CHANGELOG, issue and PR templates, Python prototype cleanup |
 
 ---
 

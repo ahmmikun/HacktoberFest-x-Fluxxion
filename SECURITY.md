@@ -8,8 +8,8 @@ RepoSage runs with the privileges of your local GitHub CLI session and processes
 
 | Version | Supported | Status |
 | ------- | ------------------ | ------ |
-| `main`  | :white_check_mark: | Active development and hackathon release branch |
-| < 0.1.0 | :x:                | Scaffolding and historical snapshots |
+| `main` (RepoSage 1.0.x) | :white_check_mark: | Active development and hackathon release branch |
+| 0.1.0 (Python prototype) | :x: | Removed from the repository; history only |
 
 ---
 
@@ -23,7 +23,6 @@ Report privately through one of these channels:
 1. **GitHub Private Vulnerability Reporting (preferred)**: open the repository's **Security** tab, choose **Advisories**, then **Report a vulnerability**.
 2. **Direct maintainer contact**:
    - **Salman Ahmad**: `140977479+ahmmikun@users.noreply.github.com`
-   - **Backup security contact**: `[MAINTAINER_SECURITY_EMAIL_PLACEHOLDER - Optional secondary email]`
 
 ### What to include
 - A title and summary of the vulnerability.
