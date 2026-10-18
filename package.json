@@ -1,0 +1,28 @@
+{
+  "name": "reposage",
+  "private": true,
+  "version": "1.0.0",
+  "description": "RepoSage: local-first, evidence-grounded GitHub repository auditing with deterministic scoring and dual-runtime Gemma 4 analysis.",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "build:shared": "npm run build --workspace=@reposage/shared",
+    "dev": "npm run build:shared && concurrently -n \"API,WEB\" -c \"cyan,magenta\" \"npm run dev --workspace=@reposage/api\" \"npm run dev --workspace=@reposage/web\"",
+    "dev:api": "npm run build:shared && npm run dev --workspace=@reposage/api",
+    "dev:web": "npm run build:shared && npm run dev --workspace=@reposage/web",
+    "build": "npm run build:shared && npm run build --workspace=@reposage/api && npm run build --workspace=@reposage/web",
+    "start": "concurrently -n \"API,WEB\" -c \"cyan,magenta\" \"npm run start --workspace=@reposage/api\" \"npm run start --workspace=@reposage/web\"",
+    "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present",
+    "preflight": "node scripts/check-env.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.6",
+    "typescript": "5.9.3"
+  }
+}
