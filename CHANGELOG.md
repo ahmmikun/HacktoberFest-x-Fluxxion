@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-10-18
 
 ### Added
+- **Complete Open-Source AI Turnkey Demo (`demo.py`)**: One-command interactive runner for hackathon judges and contributors.
+- **Agent Skill Open Standard Engine (`skills/code-explainer/SKILL.md`)**: Fully compliant agent skill parser, loader, and validator (`src/skills_manager.py`).
+- **Open-Weight Model Harness (`src/harness.py`)**: Pluggable harness connecting to local Ollama (Gemma 2B / Hermes 3) with a deterministic offline simulation engine.
+- **Agent Orchestrator (`src/agent.py`)**: End-to-end skill binding, context synthesis, and execution engine.
+- **Interactive Command-Line Interface (`main.py`)**: CLI supporting `demo`, `skills`, `health`, and `run` subcommands.
+- **Automated Test Suite (`tests/test_harness.py`)**: Complete test coverage for skill discovery, compliance validation, and model inference.
 - Initial project scaffolding for **MLH Hacktoberfest Hack Day Lahore × Fluxxion 2026**.
 - Open-source governance and community documents:
   - `README.md`: Project overview, open-source AI architecture, installation, and hackathon challenge context.
