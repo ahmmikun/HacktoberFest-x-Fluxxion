@@ -36,7 +36,7 @@ RepoSage uses a decoupled **Monorepo Architecture** featuring a **Next.js (App R
 |                                 v              v                               |  |
 |            +--------------------+--+        +--+--------------------+          |  |
 |            | Local Ollama Runtime  |        | Google AI Studio API  |          |  |
-|            | Model: gemma4:e4b     |        | Model: gemma-4-26b    |          |  |
+|            | Model: gemma4:e4b     |        | Model: gemma-4-26b-a4b|          |  |
 |            | (:11434 Localhost)    |        | (HTTPS Outbound)      |          |  |
 |            +-----------------------+        +-----------------------+          |  |
 +-----------------------------------------------------------------------------------+

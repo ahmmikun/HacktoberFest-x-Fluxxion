@@ -68,7 +68,7 @@ reposage/
 | Technology | Model / Package | Role & Justification |
 | :--- | :--- | :--- |
 | **Ollama Local Runtime** | `gemma4:e4b` | Local open-weight inference (`http://127.0.0.1:11434/api/chat`) using JSON schema enforcement (`format: jsonSchema`). |
-| **Google Gen AI SDK** | `@google/genai` (`gemma-4-26b-it`) | Hosted inference via Google AI Studio for deep cross-file reasoning and side-by-side model benchmarking. |
+| **Google Gen AI SDK** | `@google/genai` (`gemma-4-26b-a4b-it`) | Hosted inference via Google AI Studio for deep cross-file reasoning and side-by-side model benchmarking. |
 | **Zod + `zod-to-json-schema`** | `^3.24` | Single source of truth for runtime validation and automatic conversion into Ollama/Google JSON schemas. |
 
 ---
@@ -117,7 +117,7 @@ OLLAMA_TIMEOUT_MS=60000
 
 # Google AI Studio Hosted Gemma 4 Configuration
 GOOGLE_AI_API_KEY=your_google_ai_studio_api_key_here
-HOSTED_GEMMA_MODEL=gemma-4-26b-it
+HOSTED_GEMMA_MODEL=gemma-4-26b-a4b-it
 HOSTED_TIMEOUT_MS=45000
 
 # Collector & Compiler Limits
