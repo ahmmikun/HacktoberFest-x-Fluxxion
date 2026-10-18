@@ -313,7 +313,7 @@ HacktoberFest-x-Fluxxion/
 │       ├── hooks/useAuditStream.ts  # EventSource hook with snapshot fallback
 │       └── lib/api.ts            # Typed API client
 ├── docs/                         # Requirements, architecture, and tech stack specs
-├── skills/                       # Agent Skill Open Standard definitions (SKILL.md)
+├── skills/                       # Standalone Agent Skill Open Standard definitions (not loaded by the pipeline)
 ├── .github/                      # Issue & PR templates
 └── CHANGELOG.md · CODE_OF_CONDUCT.md · CONTRIBUTING.md · CONTRIBUTORS.md · LICENSE · SECURITY.md · SUPPORT.md
 ```

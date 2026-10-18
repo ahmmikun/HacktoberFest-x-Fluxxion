@@ -7,10 +7,8 @@ license: MIT
 metadata:
   standard: Agent Skill Open Standard
   target_models:
-    - gemma:2b
-    - gemma:7b
-    - hermes-3
-    - llama3.2
+    - gemma4:e4b
+    - gemma-4-26b-a4b-it
   tags:
     - code-analysis
     - open-source
@@ -20,6 +18,9 @@ metadata:
 # Code Explainer Skill
 
 This skill guides open-weight AI agents in analyzing code snippets, repositories, and architectural patterns to provide developer-friendly explanations.
+
+> [!NOTE]
+> This is a standalone skill definition for agents that support the Agent Skill Open Standard. The RepoSage audit pipeline does not load it; RepoSage's own model prompts live in `apps/api/src/services/prompts.ts`. The target models match the ones RepoSage uses: Gemma 4 E4B (Ollama) and Gemma 4 26B (Google AI Studio).
 
 ## Input Parameters
 

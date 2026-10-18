@@ -111,7 +111,7 @@ These come from the security and reliability requirements. Pull requests that br
 1. **No shell interpolation (NFR-SEC-01).** Spawn `gh` only with `execFile` and argument arrays. Never use `exec()` or build command strings. Validate repo slugs with `^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$`.
 2. **Tokens stay in memory (FR-AUTH-02, NFR-SEC-02).** Never log, persist, or return the `gh` token or `GOOGLE_AI_API_KEY`. Do not put them in error messages.
 3. **Deterministic before AI (FR-DET-01).** Health Score logic must never depend on model output.
-4. **Skipped is not failed (FR-DET-03).** If evidence is missing because of permissions or API limits, return a skipped state, not `FAIL`.
+4. **Skipped is not failed (FR-DET-03).** If evidence is missing because of permissions or API limits, return `SKIPPED_INSUFFICIENT_EVIDENCE`, not `FAIL`.
 5. **Redact before sending (FR-COMP-02).** Repository text that may reach a model must pass through `redactSecrets` (`utils/redact.ts`) before truncation. Log through `utils/logger.ts`, never `console.log`, so log lines are scrubbed too.
 6. **Repository content is untrusted (FR-COMP-03, NFR-SEC-03).** Keep it inside `<untrusted_repo_evidence>` in prompts, and sanitize model output before rendering.
 7. **Every finding cites evidence (FR-VER-01).** New finding types must carry `evidenceRefs` that the verifier can check.
