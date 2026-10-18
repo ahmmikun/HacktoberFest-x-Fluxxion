@@ -14,6 +14,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 .next/
+.next-dev/
 out/
 build/
 dist/
@@ -22,6 +23,13 @@ dist-ssr/
 next-env.d.ts
 coverage/
 .turbo/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
 
 # AI Model Checkpoints, Weights, and Large Datasets
 # Note: Keep large binary weights out of Git. Use Hugging Face Hub, Ollama, or object storage.
