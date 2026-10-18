@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `apps/web` (Next.js 15, React 19, Tailwind 4): Mission Control (preflight pills, guided `gh` setup, mode selector, repository browser), live audit workspace (pipeline stepper, health gauge and radar chart, rule table, findings board with quarantine toggle, finding cards with confirmed issue creation), Model Comparison Arena, and a sanitized Markdown report preview.
   - `scripts/check-env.mjs` (`npm run preflight`), per-app `.env.example` files, and `tsconfig.base.json`.
 - **Documentation**: README, CONTRIBUTING, SECURITY, and SUPPORT updated to describe the implemented code: full rule table, API and SSE reference, configuration (`HOST`, `MAX_EVIDENCE_BYTES`, `LOG_LEVEL`), security controls, troubleshooting, and known limitations.
+- **Documentation**: issue and PR templates now reference the real modules, check statuses, rule-weight constraint, and `npm run preflight`; CONTRIBUTORS lists the hackathon team; SECURITY's supported-versions table reflects the 1.0.x line; `skills/code-explainer/SKILL.md` targets Gemma 4 and notes it is not loaded by the pipeline.
 
 ### Changed
 - **Project direction**: the repository now builds **RepoSage**, a local-first, evidence-grounded GitHub repository auditor using Gemma 4 E4B (Ollama, `gemma4:e4b`) and Gemma 4 26B (Google AI Studio, `gemma-4-26b-a4b-it`).
