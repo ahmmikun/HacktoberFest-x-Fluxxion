@@ -27,14 +27,17 @@ How should it work? Include API, UI, or schema changes if you have them in mind.
 - [ ] Documentation / specs
 
 ## Deterministic Rule Proposal (if applicable)
-- **Proposed `checkId`**: [e.g. `CI_EXPLICIT_PERMISSIONS`]
-- **Dimension**: CI/CD · Testing · Dependencies · Documentation · Security · Maintenance
-- **Evidence it reads**: [files or GraphQL fields]
-- **PASS / WARN / FAIL conditions**:
-- **When it should be skipped**: [e.g. evidence unavailable because of permissions]
+The current 22 rules are listed in the [README](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/blob/main/README.md#health-scoring--rules).
 
-## Spec Impact
-Which documents in [`/docs`](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/tree/main/docs) would need updating? List any new or changed requirement IDs.
+- **Proposed `checkId`**: [e.g. `CI_DEPENDENCY_REVIEW`]
+- **Dimension**: `CI_CD` · `TESTING` · `DEPS` · `DOCS` · `SECURITY` · `MAINTENANCE`
+- **Suggested points, and which existing rules in that dimension give up weight**: [each dimension's total is fixed]
+- **Evidence it reads**: [files or GraphQL fields; note if the collector does not fetch them yet]
+- **PASS / WARN / FAIL conditions** (and how WARN partial credit is calculated):
+- **When it returns `SKIPPED_INSUFFICIENT_EVIDENCE`**: [e.g. evidence unavailable because of permissions]
+
+## Documentation Impact
+Which docs would need updating (README, CONTRIBUTING, SUPPORT, or the specs in [`/docs`](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/tree/main/docs))? List any new or changed requirement IDs or environment variables.
 
 ## Alternatives Considered
 Other approaches you considered.

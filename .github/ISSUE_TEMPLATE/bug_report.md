@@ -13,25 +13,28 @@ assignees: ''
 A clear and concise description of the bug.
 
 ## Affected Area
-- [ ] `apps/web` (frontend / UI)
-- [ ] `apps/api` – `GhCliBridge` / preflight
-- [ ] `apps/api` – Evidence Collector
-- [ ] `apps/api` – Deterministic Engine / Health Score
-- [ ] `apps/api` – Evidence Compiler / secret redaction
-- [ ] `apps/api` – Gemma orchestration (Ollama or AI Studio)
-- [ ] `apps/api` – Citation Verifier
-- [ ] SSE streaming, Markdown export, or issue creation
+- [ ] `apps/web`: Mission Control, repository browser, or mode selector
+- [ ] `apps/web`: audit workspace (pipeline stepper, health score, findings, Comparison Arena, report preview)
+- [ ] `apps/api`: `gh` session / preflight (`ghBridge.ts`, `routes/system.ts`)
+- [ ] `apps/api`: evidence collection (`collector.ts`, `repos.ts`)
+- [ ] `apps/api`: deterministic rules / Health Score (`deterministic.ts`), including a wrong PASS/WARN/FAIL result
+- [ ] `apps/api`: Evidence Manifest or secret redaction (`compiler.ts`, `redact.ts`)
+- [ ] `apps/api`: Gemma inference (`ollamaClient.ts`, `geminiClient.ts`, `orchestrator.ts`)
+- [ ] `apps/api`: citation verification (`verifier.ts`)
+- [ ] `apps/api`: audit sessions, SSE stream, Markdown export, or issue creation
 - [ ] `packages/shared` schemas
+- [ ] `npm run preflight` (`scripts/check-env.mjs`) or install / build
 - [ ] Documentation
 
 ## Steps to Reproduce
 1. Audited repository (public `owner/repo`, or describe a private one): `...`
-2. Execution mode: `local` / `hosted` / `compare`
-3. Action taken: `...`
-4. Error or unexpected result: `...`
+2. Commit audited (shown next to the branch name in the audit header): `...`
+3. Execution mode: `local` / `hosted` / `compare`
+4. Action taken: `...`
+5. Error or unexpected result: `...`
 
 ## Expected Behavior
-What you expected to happen. If relevant, reference the requirement (for example `FR-VER-02`).
+What you expected to happen. For a wrong rule result, name the `checkId` and the status you expected. If relevant, reference the requirement (for example `FR-VER-02`).
 
 ## Environment
 - **OS**: [e.g. Windows 11, Ubuntu 24.04, macOS 15]
@@ -43,15 +46,17 @@ What you expected to happen. If relevant, reference the requirement (for example
 - **Browser**: [e.g. Chrome 130]
 
 ## Preflight Output
-Paste the response from `GET /api/v1/system/preflight` or a screenshot of the Preflight banner, with any token values removed.
+Paste the output of `npm run preflight` (it never prints secret values). If the app was running, the response from `GET /api/v1/system/preflight` or a screenshot of the status pills also helps.
 
-```json
+```text
 
 ```
 
 ## Logs & Error Output
+Paste relevant lines from the API terminal, the browser console, or the pipeline stepper's **Event log**. The API redacts secrets from its logs, but double-check before posting.
+
 ```text
-Paste relevant API or browser console output here (with secrets removed)
+
 ```
 
 ## Additional Context
