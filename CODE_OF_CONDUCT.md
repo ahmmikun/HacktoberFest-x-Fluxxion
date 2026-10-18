@@ -68,7 +68,7 @@ All complaints will be reviewed and investigated promptly and fairly. All
 community leaders are obligated to respect the privacy and security of the
 reporter of any incident.
 
-> **Note on Event-Specific Reporting**: This project is developed in association with **MLH Hacktoberfest Hack Day Lahore × Fluxxion 2026**. For incidents occurring directly at in-person event venues, please also notify on-site event staff or refer to the official [MLH Code of Conduct](https://static.mlh.io/docs/mlh-code-of-conduct.pdf).
+> **Note on Event-Specific Reporting**: RepoSage is developed in association with **MLH Hacktoberfest Hack Day Lahore × Fluxxion 2026**. For incidents occurring directly at in-person event venues, please also notify on-site event staff or refer to the official [MLH Code of Conduct](https://static.mlh.io/docs/mlh-code-of-conduct.pdf).
 
 ## Enforcement Guidelines
 

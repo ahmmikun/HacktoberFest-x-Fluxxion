@@ -26,4 +26,14 @@ SOFTWARE.
 
 This MIT License applies strictly to the original source code and documentation created within this repository.
 
-Any third-party dependencies, open-weight language models (e.g., Gemma, Llama, Mistral, Hermes), pretrained weights, datasets, or external cloud APIs referenced or utilized by this project remain subject to their respective creators' licenses, terms of use, and acceptable use policies. Users and contributors are responsible for reviewing and adhering to all applicable upstream licenses.
+Any third-party dependencies, open-weight language models, pretrained weights, datasets, or external cloud APIs referenced or utilized by this project remain subject to their respective creators' licenses, terms of use, and acceptable use policies. Users and contributors are responsible for reviewing and adhering to all applicable upstream licenses.
+
+In particular, RepoSage uses:
+
+- Gemma 4 models (e.g., Gemma 4 E4B via Ollama, Gemma 4 26B), released by Google
+  under the Apache License 2.0. Model weights are not distributed with this
+  repository.
+- The Google AI Studio / Gemini API for hosted inference, which is governed by
+  Google's API terms of service, separately from the model weight license.
+- The GitHub CLI (`gh`) and GitHub APIs, governed by their own licenses and
+  GitHub's terms of service.

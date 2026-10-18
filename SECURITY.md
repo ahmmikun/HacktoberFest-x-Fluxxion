@@ -1,61 +1,74 @@
 # Security Policy
 
-The maintainers and community of **HacktoberFest-x-Fluxxion** take software security seriously. We welcome responsible disclosures from researchers, contributors, and users to ensure our tools and workflows remain safe.
+RepoSage runs with the privileges of your local GitHub CLI session and processes untrusted repository content, so we take security reports seriously. Responsible disclosures from researchers, contributors, and users are welcome.
 
 ---
 
 ## Supported Versions
 
-During the active development phase of the project (including during and following the **MLH Hacktoberfest Hack Day Lahore × Fluxxion 2026** hackathon), security updates and fixes will be applied to the primary development branch:
-
-| Version | Supported          | Status |
+| Version | Supported | Status |
 | ------- | ------------------ | ------ |
-| `main`  | :white_check_mark: | Active development & hackathon release branch |
-| < 0.1.0 | :x:                | Scaffolding / Historical snapshots |
+| `main`  | :white_check_mark: | Active development and hackathon release branch |
+| < 0.1.0 | :x:                | Scaffolding and historical snapshots |
 
 ---
 
 ## Reporting a Vulnerability
 
 > [!WARNING]
-> **Please DO NOT file public GitHub Issues or create public discussions for suspected security vulnerabilities or exposed secrets.**
+> **Do not open public GitHub Issues or discussions for suspected vulnerabilities or exposed secrets.**
 
-If you discover a security vulnerability, private data leak, or unsafe dependency execution path, please report it through one of the following private channels:
+Report privately through one of these channels:
 
-1. **GitHub Private Vulnerability Reporting (Preferred)**:
-   Navigate to the **Security** tab of the repository on GitHub, click **Advisories**, and select **Report a vulnerability**. This creates a confidential draft advisory that only project maintainers can access.
-2. **Direct Maintainer Contact**:
-   If private vulnerability reporting is not active or accessible, send an email describing the issue to:
+1. **GitHub Private Vulnerability Reporting (preferred)**: open the repository's **Security** tab, choose **Advisories**, then **Report a vulnerability**.
+2. **Direct maintainer contact**:
    - **Salman Ahmad**: `140977479+ahmmikun@users.noreply.github.com`
-   - **Backup Security Contact**: `[MAINTAINER_SECURITY_EMAIL_PLACEHOLDER - Optional secondary email]`
+   - **Backup security contact**: `[MAINTAINER_SECURITY_EMAIL_PLACEHOLDER - Optional secondary email]`
 
-### What to Include in Your Report
+### What to include
+- A title and summary of the vulnerability.
+- Steps to reproduce, including a minimal proof of concept (for example, a crafted repository file or filename).
+- Impact (for example token leakage, command injection, prompt injection, XSS, or an unwanted GitHub mutation).
+- A proposed mitigation, if you have one.
 
-To help us triage and resolve the issue quickly, please provide:
-- A descriptive title and summary of the vulnerability.
-- Steps to reproduce the issue (including any minimal proof-of-concept scripts or inputs).
-- Potential impact (e.g., arbitrary code execution, token leakage, prompt injection / model breakout).
-- Any proposed remediation or mitigation strategy, if available.
-
-### What to Expect
-
-- **Initial Response**: We aim to acknowledge receipt of your vulnerability report within **48 hours**.
-- **Assessment**: We will evaluate the impact, verify the reproduction steps, and assign an internal priority.
-- **Remediation**: Once verified, we will develop a patch or configuration change in a private advisory fork.
-- **Disclosure**: We will coordinate with the reporter on a timeline before publishing a release notice and acknowledging the reporter's contribution (unless anonymity is requested).
+### What to expect
+- **Acknowledgment** within **48 hours**.
+- **Assessment** of impact and reproduction, with an assigned priority.
+- **Remediation** in a private advisory fork.
+- **Coordinated disclosure** with the reporter before a public notice. We credit reporters unless they ask to stay anonymous.
 
 ---
 
-## AI Model & Data Security Guidelines
+## Threat Model & Built-in Protections
 
-Because this repository focuses on open-source and open-weight AI implementations:
+RepoSage is designed as a **single-user, localhost** tool. These are the risks it defends against and the requirements that cover them (see the [Requirements Specification](docs/reposage_requirements_specification.md)).
 
-1. **Zero Secret Policy**:
-   - **Never commit `.env` files, API keys, access tokens, SSH keys, or cloud credentials.**
-   - All external keys must be loaded via local environment variables (see `.env.example`).
-   - Any secret detected in Git history will be treated as compromised immediately.
-2. **Model Weight Verification**:
-   - Ensure open-weight model artifacts are verified against upstream SHA256 checksums or downloaded directly from verified repositories (e.g., Hugging Face Hub official orgs, Ollama official library).
-   - Never run unverified pickled `.bin` or `.pkl` weight files without sandbox isolation; prefer `.safetensors` format.
-3. **Prompt Injection & Tool Invocation Guardrails**:
-   - When building agent skills or autonomous harnesses, ensure that model tool calls that touch file system operations or network sockets contain strict input validation.
+| Risk | Protection | Requirement |
+| :--- | :--- | :--- |
+| Command injection through repo names, issue titles, or bodies | `gh` runs only through `child_process.execFile` with argument arrays. Repo slugs must match `^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$`. `exec()` and string-built commands are prohibited. | NFR-SEC-01 |
+| GitHub token leakage | The token comes from `gh auth token`, lives only in backend memory, and is never logged, persisted, or sent to the browser. | FR-AUTH-02, NFR-SEC-02 |
+| AI Studio key leakage | `GOOGLE_AI_API_KEY` lives only in `apps/api/.env` and the backend process. It must never use a `NEXT_PUBLIC_` prefix. | NFR-SEC-02 |
+| Secrets in audited repositories reaching a cloud API | The Evidence Compiler replaces credential patterns (`ghp_`, `AKIA`, `BEGIN PRIVATE KEY`, webhooks, high-entropy strings) with `[REDACTED_SECRET]` before hosted inference. | FR-COMP-02 |
+| Indirect prompt injection from repository files | Evidence is wrapped in `<untrusted_repo_evidence>` tags, and the system prompt tells the model to treat it as passive data. | FR-COMP-03 |
+| Fabricated findings | The Citation Verifier checks every cited path and check ID and quarantines unsupported claims. | FR-VER-01–03 |
+| XSS through crafted filenames or model output | Model Markdown and JSON are sanitized before rendering. | NFR-SEC-03 |
+| Unintended writes to GitHub | `gh issue create` runs only after explicit user confirmation. | FR-ACT-03 |
+| Runaway hosted API usage | Express rate limiting and per-model timeouts. | Tech stack (Helmet & Express Rate Limit) |
+
+### Deployment warning
+
+The Express API has **no authentication layer of its own**. Anyone who can reach it acts with your `gh` session's permissions. Bind it to `localhost`, keep `CORS_ORIGIN` limited to the local frontend, and do not expose port 4000 on a shared network or the internet. Any future hosted deployment must add authentication first.
+
+### Privacy modes
+
+- **Local Mode** (`gemma4:e4b` on Ollama): repository evidence is not sent to any third-party AI service. RepoSage still calls the GitHub API to collect evidence.
+- **Hosted and Compare modes**: the redacted Evidence Manifest is sent to Google AI Studio and is subject to Google's API terms.
+
+---
+
+## Contributor Security Rules
+
+1. **Zero secrets in Git.** Never commit `.env` files, API keys, tokens, SSH keys, or cloud credentials. Any secret found in Git history is treated as compromised and must be rotated.
+2. **Synthetic test fixtures.** Redaction tests must build fake tokens at runtime. Never commit real or revoked credentials.
+3. **Only `ghBridge.ts` spawns `gh`.** No other module may start subprocesses.
+4. **Model weights.** Pull Gemma 4 only from official sources (the Ollama library or Google's official Hugging Face organization). Prefer `.safetensors` or GGUF over pickled `.bin` / `.pkl` files.

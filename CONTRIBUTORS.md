@@ -1,39 +1,36 @@
 # Contributors
 
-Thank you for contributing to **HacktoberFest-x-Fluxxion**! Every contribution—from code and architecture to documentation, issue reports, testing, and community support—makes open-source AI stronger and more accessible.
+Thank you for contributing to **RepoSage**. Every contribution counts: code, architecture, specs, documentation, testing, issue reports, and community support.
 
 ---
 
 ## Core Maintainers & Project Initiators
 
-- **Salman Ahmad** ([@ahmmikun](https://github.com/ahmmikun)) - Project Creator, Architecture & Maintenance
+- **Salman Ahmad** ([@ahmmikun](https://github.com/ahmmikun)): Project Creator, Architecture & Maintenance
 
 ---
 
-## Hackathon Team & Event Contributors
+## Hackathon Team
 
-This repository was established for the **MLH Hacktoberfest Hack Day Lahore × Fluxxion 2026** hackathon (October 18, 2026 at COLABS Cantt - NASTP, Lahore, Pakistan).
+RepoSage was built for **MLH Hacktoberfest Hack Day Lahore × Fluxxion 2026** (October 18, 2026, at COLABS Cantt - NASTP, Lahore, Pakistan).
 
-- *Team members and co-authors will be recognized here as their project contributions and pull requests are merged.*
-- `[TEAM_MEMBER_NAME_PLACEHOLDER]` - `[@GITHUB_USERNAME_PLACEHOLDER]` (Role / Focus Area)
+| Name | GitHub | Focus area |
+| :--- | :--- | :--- |
+| `[TEAM_MEMBER_NAME]` | `[@GITHUB_USERNAME]` | Documentation & specifications (`/docs`, README, governance) |
+| `[TEAM_MEMBER_NAME]` | `[@GITHUB_USERNAME]` | Implementation (`apps/api`, `apps/web`, `packages/shared`) |
 
 ---
 
 ## Community Contributors
 
-We value all contributions from the global open-source community during Hacktoberfest and beyond.
+Contributors from Hacktoberfest and the wider open-source community are listed here as their pull requests are merged.
 
-- Contributor list will expand as pull requests are submitted and merged!
-
-You can also view the live contribution metrics and graph on GitHub:
-👉 [GitHub Contributors Graph](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/graphs/contributors)
+Live contribution graph: [GitHub Contributors](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/graphs/contributors)
 
 ---
 
 ## How to Get Recognized
 
-We welcome first-time open-source contributors and experienced builders alike. To be recognized:
-
-1. **Submit a Pull Request**: Submit an accepted fix, feature, documentation update, or test case following our [Contributing Guide](CONTRIBUTING.md).
-2. **Open Issues or Report Bugs**: Submit well-documented bugs, reproduction steps, or feature proposals.
-3. **Add Yourself to This File**: When your PR is ready for merge, feel free to add your name, GitHub handle, and a brief description of what you contributed to the list above!
+1. **Submit a pull request**: a fix, feature, rule, test, or docs update that follows the [Contributing Guide](CONTRIBUTING.md).
+2. **Report issues**: well-documented bugs, new deterministic rule ideas, or false positives and negatives in audits.
+3. **Add yourself**: when your pull request is ready to merge, add your name, GitHub handle, and contribution to this file.
