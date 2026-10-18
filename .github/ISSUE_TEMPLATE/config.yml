@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Community Support & Questions
+    url: https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/blob/main/SUPPORT.md
+    about: Read our support guide and community resources.
+  - name: Security Vulnerability Reporting
+    url: https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/blob/main/SECURITY.md
+    about: Learn how to report vulnerabilities privately without opening public issues.
+  - name: MLH Hacktoberfest Hack Day Lahore × Fluxxion Event
+    url: https://events.mlh.com/events/15520-hacktoberfest-hack-day-lahore-x-fluxxion
+    about: Official event details, schedule, and organizers.
