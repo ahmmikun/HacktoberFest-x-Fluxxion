@@ -1,15 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { TriangleAlert, Lightbulb, ShieldAlert } from "lucide-react";
-import type { AuditResult, FindingCategory, ModelRunResult, Severity } from "@reposage/shared";
+import { Lightbulb, ShieldAlert, TriangleAlert, Zap } from "lucide-react";
+import { RUNTIME_LABELS, type AuditResult, type FindingCategory, type ModelRunResult, type Severity } from "@reposage/shared";
 import { FindingCard } from "./FindingCard";
 import { Badge, Card, cx } from "./ui";
 
 const SEVERITIES: Array<Severity | "ALL"> = ["ALL", "CRITICAL", "HIGH", "MEDIUM", "LOW"];
 const CATEGORIES: Array<FindingCategory | "ALL"> = ["ALL", "CI_CD", "TESTING", "DEPENDENCIES", "DOCUMENTATION", "SECURITY", "MAINTENANCE"];
 
-const runtimeLabel = (r: ModelRunResult) => (r.runtime === "OLLAMA_LOCAL" ? `E4B · ${r.modelId}` : `26B · ${r.modelId}`);
+const runtimeLabel = (r: ModelRunResult) => `${RUNTIME_LABELS[r.runtime]} · ${r.modelId}`;
 
 /** Filterable VERIFIED findings + quarantine toggle for unverified claims. */
 export function FindingsBoard({ audit }: { audit: AuditResult }) {
@@ -45,6 +45,15 @@ export function FindingsBoard({ audit }: { audit: AuditResult }) {
             </button>
           ))}
         </div>
+      )}
+
+      {run.fallbackFrom && (
+        <p className="mb-3 flex items-start gap-2 rounded-lg border border-sky-800/60 bg-sky-950/30 p-2 text-xs text-sky-200">
+          <Zap className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span>
+            Fallback engine: {run.fallbackFrom.modelId} was unavailable ({run.fallbackFrom.error}), so {run.modelId} analysed the same manifest.
+          </span>
+        </p>
       )}
 
       {run.status !== "SUCCESS" ? (

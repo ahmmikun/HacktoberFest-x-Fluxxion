@@ -53,7 +53,7 @@ export function ModelComparisonArena({ audit }: { audit: AuditResult }) {
               <th scope="col" className="px-3 py-2 text-left">Metric</th>
               {runs.map((r) => (
                 <th key={r.runtime} scope="col" className="px-3 py-2 text-right">
-                  {r.runtime === "OLLAMA_LOCAL" ? "E4B (local)" : "26B (hosted)"}
+                  {r.runtime === "OLLAMA_LOCAL" ? "E4B (local)" : r.runtime === "GROQ" ? "gpt-oss (Groq fallback)" : "26B (hosted)"}
                   <div className="font-mono text-[10px] normal-case text-zinc-500">{r.modelId}</div>
                 </th>
               ))}
@@ -89,8 +89,8 @@ export function ModelComparisonArena({ audit }: { audit: AuditResult }) {
                 <tr>
                   <th scope="col" className="px-3 py-2 text-left">Finding</th>
                   <th scope="col" className="px-3 py-2 text-left">Agreement</th>
-                  <th scope="col" className="px-3 py-2 text-left">E4B</th>
-                  <th scope="col" className="px-3 py-2 text-left">26B</th>
+                  <th scope="col" className="px-3 py-2 text-left">Local</th>
+                  <th scope="col" className="px-3 py-2 text-left">Hosted</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
@@ -101,7 +101,7 @@ export function ModelComparisonArena({ audit }: { audit: AuditResult }) {
                       <div className="text-[11px] text-zinc-500">{c.category}</div>
                     </td>
                     <td className="px-3 py-2">
-                      <Badge tone={c.agreement === "BOTH" ? "green" : "zinc"}>{c.agreement === "BOTH" ? "Consensus" : c.agreement === "LOCAL_ONLY" ? "E4B only" : "26B only"}</Badge>
+                      <Badge tone={c.agreement === "BOTH" ? "green" : "zinc"}>{c.agreement === "BOTH" ? "Consensus" : c.agreement === "LOCAL_ONLY" ? "Local only" : "Hosted only"}</Badge>
                     </td>
                     <td className="px-3 py-2">{c.localSeverity ? <Badge tone={SEVERITY_TONE[c.localSeverity]}>{c.localSeverity}</Badge> : "—"}</td>
                     <td className="px-3 py-2">{c.hostedSeverity ? <Badge tone={SEVERITY_TONE[c.hostedSeverity]}>{c.hostedSeverity}</Badge> : "—"}</td>

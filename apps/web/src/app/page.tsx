@@ -26,7 +26,7 @@ export default function HomePage() {
       setApiError(null);
       // Default to the best available engine configuration.
       const local = data.ollama.reachable && data.ollama.modelAvailable;
-      const hosted = data.googleAiStudio.configured;
+      const hosted = data.googleAiStudio.configured || data.groq.configured;
       setMode((m) => (m === "compare" && !(local && hosted) ? (local ? "local" : hosted ? "hosted" : "compare") : m));
     } catch (err) {
       setApiError((err as Error).message);

@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheck, Cloud, Cpu, KeyRound, RefreshCw, CircleX } from "lucide-react";
+import { CircleCheck, Cloud, Cpu, KeyRound, RefreshCw, CircleX, Zap } from "lucide-react";
 import type { PreflightResponse } from "@reposage/shared";
 import { Button, cx } from "./ui";
 
@@ -45,6 +45,13 @@ export function PreflightBanner({ data, loading, onRetry }: { data: PreflightRes
             icon={<Cloud className="h-4 w-4" aria-hidden="true" />}
             label="AI Studio"
             detail={data.googleAiStudio.configured ? data.googleAiStudio.model : "no API key"}
+          />
+          <Pill
+            ok={data.groq.configured}
+            warn
+            icon={<Zap className="h-4 w-4" aria-hidden="true" />}
+            label="Groq fallback"
+            detail={data.groq.configured ? data.groq.model : "no API key"}
           />
         </ul>
       ) : (
