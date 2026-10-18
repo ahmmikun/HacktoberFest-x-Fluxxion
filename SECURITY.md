@@ -45,19 +45,23 @@ RepoSage is designed as a **single-user, localhost** tool. These are the risks i
 
 | Risk | Protection | Requirement |
 | :--- | :--- | :--- |
-| Command injection through repo names, issue titles, or bodies | `gh` runs only through `child_process.execFile` with argument arrays. Repo slugs must match `^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$`. `exec()` and string-built commands are prohibited. | NFR-SEC-01 |
-| GitHub token leakage | The token comes from `gh auth token`, lives only in backend memory, and is never logged, persisted, or sent to the browser. | FR-AUTH-02, NFR-SEC-02 |
-| AI Studio key leakage | `GOOGLE_AI_API_KEY` lives only in `apps/api/.env` and the backend process. It must never use a `NEXT_PUBLIC_` prefix. | NFR-SEC-02 |
-| Secrets in audited repositories reaching a cloud API | The Evidence Compiler replaces credential patterns (`ghp_`, `AKIA`, `BEGIN PRIVATE KEY`, webhooks, high-entropy strings) with `[REDACTED_SECRET]` before hosted inference. | FR-COMP-02 |
-| Indirect prompt injection from repository files | Evidence is wrapped in `<untrusted_repo_evidence>` tags, and the system prompt tells the model to treat it as passive data. | FR-COMP-03 |
-| Fabricated findings | The Citation Verifier checks every cited path and check ID and quarantines unsupported claims. | FR-VER-01–03 |
-| XSS through crafted filenames or model output | Model Markdown and JSON are sanitized before rendering. | NFR-SEC-03 |
-| Unintended writes to GitHub | `gh issue create` runs only after explicit user confirmation. | FR-ACT-03 |
-| Runaway hosted API usage | Express rate limiting and per-model timeouts. | Tech stack (Helmet & Express Rate Limit) |
+| Other websites or rebound DNS names calling the local API | The API binds to `127.0.0.1` by default. `server.ts` rejects requests whose `Host` header is not `localhost`, `127.0.0.1`, `[::1]`, or `HOST`, and any request whose `Origin` is not listed in `CORS_ORIGIN`. | — |
+| Command injection through repo names, issue titles, or bodies | `ghBridge.ts` runs `gh` only through `execFile` with argument arrays. Repo slugs must match `^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$`, titles are stripped of newlines and capped at 120 characters, and bodies go through stdin (`--body-file -`). | NFR-SEC-01 |
+| GitHub token leakage | The token comes from `gh auth token`, sits in a module-private 5-minute cache, and is dropped on a 401. It is never logged, persisted, or returned to the browser. Errors from `gh auth token` are discarded because they could echo the token. | FR-AUTH-02, NFR-SEC-02 |
+| AI Studio key leakage | `GOOGLE_AI_API_KEY` is read only by `apps/api/src/config.ts`. Preflight reports only whether it is configured. SDK error messages have `key=` values stripped. | NFR-SEC-02 |
+| Secrets in logs | Every log line passes through `redactSecrets` (`utils/logger.ts`). Config validation errors list variable names, never values. | NFR-SEC-02 |
+| Secrets in audited repositories reaching a model | `utils/redact.ts` masks PEM private keys, GitHub tokens, AWS key IDs, Google API keys, Slack tokens and webhooks, Stripe live keys, OpenAI-style keys, JWTs, credentials in URLs, and high-entropy secret assignments with `[REDACTED_SECRET]`. Redaction runs on the full text before truncation. | FR-COMP-02 |
+| Indirect prompt injection from repository files | Evidence is wrapped in `<untrusted_repo_evidence>` tags, with `<` and `>` JSON-escaped so content cannot close the tag. The system prompt tells the model to treat it as passive data. | FR-COMP-03 |
+| Fabricated findings | `verifier.ts` checks every cited path against the Git tree and every check ID against the rule results, and quarantines unsupported claims. | FR-VER-01–03 |
+| XSS through crafted filenames or model output | React escapes model text. The Markdown preview uses `rehype-sanitize` with `skipHtml`, and the exporter HTML-escapes untrusted text. The web app sends `X-Frame-Options: DENY`, `nosniff`, and `no-referrer`. | NFR-SEC-03 |
+| Unintended writes to GitHub | Issues can be created only for stored `VERIFIED` findings, after a confirmation dialog, with `confirm: true` in the request. The body is built server-side from the stored finding, and repeat requests return the existing issue. | FR-ACT-03 |
+| Runaway API usage | Rate limits of 300 requests/min overall and 10/min for audits and issues, at most 3 concurrent audits, a 64 KB JSON body limit, and per-model timeouts. | NFR-PERF-03 |
 
 ### Deployment warning
 
-The Express API has **no authentication layer of its own**. Anyone who can reach it acts with your `gh` session's permissions. Bind it to `localhost`, keep `CORS_ORIGIN` limited to the local frontend, and do not expose port 4000 on a shared network or the internet. Any future hosted deployment must add authentication first.
+The Express API has **no authentication layer of its own**. Anyone who can reach it acts with your `gh` session's permissions. Keep `HOST=127.0.0.1` (the API logs a warning when bound elsewhere), keep `CORS_ORIGIN` limited to the local dashboard, and do not expose port 4000 on a shared network or the internet. Any future hosted deployment must add authentication first.
+
+Audit results, including collected evidence metadata, are held in API memory for up to 1 hour and are not written to disk.
 
 ### Privacy modes
 
@@ -70,5 +74,6 @@ The Express API has **no authentication layer of its own**. Anyone who can reach
 
 1. **Zero secrets in Git.** Never commit `.env` files, API keys, tokens, SSH keys, or cloud credentials. Any secret found in Git history is treated as compromised and must be rotated.
 2. **Synthetic test fixtures.** Redaction tests must build fake tokens at runtime. Never commit real or revoked credentials.
-3. **Only `ghBridge.ts` spawns `gh`.** No other module may start subprocesses.
-4. **Model weights.** Pull Gemma 4 only from official sources (the Ollama library or Google's official Hugging Face organization). Prefer `.safetensors` or GGUF over pickled `.bin` / `.pkl` files.
+3. **Only `ghBridge.ts` spawns `gh`.** No other API module may start subprocesses. (`scripts/check-env.mjs` also calls `gh --version` and `gh auth status` with `execFileSync`, and never reads the token.)
+4. **Log through `utils/logger.ts`.** Do not use `console.*` in API code, so every line is redacted.
+5. **Model weights.** Pull Gemma 4 only from official sources (the Ollama library or Google's official Hugging Face organization). Prefer `.safetensors` or GGUF over pickled `.bin` / `.pkl` files.
