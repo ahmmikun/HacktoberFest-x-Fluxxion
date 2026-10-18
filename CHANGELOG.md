@@ -10,9 +10,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Core AI pipeline and model integration modules (in development during hack day).
-- Benchmark scripts and reproducible evaluation datasets.
-- Interactive demo and client interface.
+- **RepoSage product specifications** (`docs/`):
+  - `reposage_requirements_specification.md`: personas, functional requirements (`FR-AUTH`, `FR-COLL`, `FR-DET`, `FR-COMP`, `FR-AI`, `FR-VER`, `FR-ACT`), non-functional requirements (`NFR-SEC`, `NFR-PERF`), and the acceptance criteria matrix.
+  - `reposage_system_design_architecture.md`: monorepo architecture, the six backend modules (`GhCliBridge`, `EvidenceCollector`, `DeterministicEngine`, `EvidenceCompiler`, `GemmaOrchestrator`, `CitationVerifier`), GraphQL evidence query, scoring formula, shared Zod schemas, REST/SSE API, and the Next.js component hierarchy.
+  - `reposage_technology_stack_setup_guide.md`: npm-workspaces layout, dependency versions, root `package.json` blueprint, environment template, and a reference `GhCliBridge` implementation.
+- **In progress**: implementation of `apps/web` (Next.js 15), `apps/api` (Express), and `packages/shared` (Zod contracts) against these specs.
+
+### Changed
+- **Project direction**: the repository now builds **RepoSage**, a local-first, evidence-grounded GitHub repository auditor using Gemma 4 E4B (Ollama, `gemma4:e4b`) and Gemma 4 26B (Google AI Studio, `gemma-4-26b-a4b-it`).
+- **Documentation**: `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `SUPPORT.md`, `CONTRIBUTORS.md`, `CODE_OF_CONDUCT.md`, `LICENSE` notice, and the GitHub issue/PR templates were rewritten for RepoSage's architecture, setup, security model, and engineering rules.
+
+### Removed
+- **Python prototype from 0.1.0**: `main.py`, `demo.py`, `requirements.txt`, `src/` (`agent.py`, `harness.py`, `skills_manager.py`), and `tests/`. RepoSage is a Node.js/TypeScript monorepo; these files stay available in Git history.
+- Python-specific entries in `.gitignore` and `.editorconfig`, and the Python-era variables in `.env.example`, which is now the RepoSage template from the setup guide.
+
+### Fixed
+- `.gitignore`: removed the Python `lib/` pattern, which would also have ignored the planned `apps/web/src/lib/` directory.
+- Technology stack guide: corrected the hosted model ID from `gemma-4-26b-it` to `gemma-4-26b-a4b-it`, the ID listed in [Google's Gemma on Gemini API docs](https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api).
 
 ---
 
