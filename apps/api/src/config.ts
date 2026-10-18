@@ -21,7 +21,13 @@ const EnvSchema = z.object({
 
   GOOGLE_AI_API_KEY: z.string().optional(),
   HOSTED_GEMMA_MODEL: z.string().default("gemma-4-26b-a4b-it"),
-  HOSTED_TIMEOUT_MS: intFromEnv(45_000),
+  HOSTED_TIMEOUT_MS: intFromEnv(120_000),
+
+  // Groq fallback for the hosted slot (OpenAI-compatible API)
+  GROQ_API_KEY: z.string().optional(),
+  GROQ_MODEL: z.string().default("openai/gpt-oss-120b"),
+  GROQ_BASE_URL: z.string().url().default("https://api.groq.com/openai/v1"),
+  GROQ_TIMEOUT_MS: intFromEnv(60_000),
 
   MAX_FILE_BYTES: intFromEnv(65_536),
   MAX_EVIDENCE_BYTES: intFromEnv(524_288),
@@ -39,8 +45,11 @@ if (!parsed.success) {
 
 const env = parsed.data;
 
-const placeholderKey = (key?: string) =>
-  !key || key.trim() === "" || key.includes("your_google_ai_studio_api_key");
+/** Treats empty values and the `.env.example` placeholders ("your_..._here") as "not configured". */
+const realKey = (key?: string): string | undefined => {
+  const k = key?.trim();
+  return !k || /^your_.*_here$/i.test(k) ? undefined : k;
+};
 
 export const config = {
   port: env.PORT,
@@ -53,9 +62,15 @@ export const config = {
   },
   hosted: {
     // NFR-SEC-02: the key lives only in this process; never serialize `config` to clients.
-    apiKey: placeholderKey(env.GOOGLE_AI_API_KEY) ? undefined : env.GOOGLE_AI_API_KEY!.trim(),
+    apiKey: realKey(env.GOOGLE_AI_API_KEY),
     model: env.HOSTED_GEMMA_MODEL,
     timeoutMs: env.HOSTED_TIMEOUT_MS,
+  },
+  groq: {
+    apiKey: realKey(env.GROQ_API_KEY),
+    model: env.GROQ_MODEL,
+    baseUrl: env.GROQ_BASE_URL.replace(/\/+$/, ""),
+    timeoutMs: env.GROQ_TIMEOUT_MS,
   },
   limits: {
     maxFileBytes: env.MAX_FILE_BYTES,

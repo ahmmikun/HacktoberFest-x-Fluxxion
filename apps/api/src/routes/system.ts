@@ -22,6 +22,7 @@ systemRouter.get(
         ...(ollama.error ? { error: ollama.error } : {}),
       },
       googleAiStudio: { configured: Boolean(config.hosted.apiKey), model: config.hosted.model },
+      groq: { configured: Boolean(config.groq.apiKey), model: config.groq.model },
       checkedAt: new Date().toISOString(),
     };
     res.set("cache-control", "no-store").json(body);

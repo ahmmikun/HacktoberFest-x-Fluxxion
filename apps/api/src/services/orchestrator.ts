@@ -76,7 +76,7 @@ export async function runModel(
     };
   }
 
-  const prefix = client.runtime === "OLLAMA_LOCAL" ? "e4b" : "26b";
+  const prefix = { OLLAMA_LOCAL: "e4b", GOOGLE_AI_STUDIO: "26b", GROQ: "groq" }[client.runtime];
   const { verified, quarantined } = verifyFindings(parsed.data.findings, validTreePaths, health, prefix);
   const total = verified.length + quarantined.length;
 
@@ -102,6 +102,33 @@ export async function runModel(
       manifestSha256: compiled.sha256,
     },
   };
+}
+
+/**
+ * Runs the first engine in `chain`; if it FAILS (unreachable, timeout, auth, quota) or DEGRADES
+ * (output invalid even after repair), the next engine runs on the identical manifest. The
+ * returned result records which engine it fell back from.
+ */
+export async function runWithFallback(
+  chain: ModelClient[],
+  compiled: CompiledManifest,
+  validTreePaths: Set<string>,
+  health: HealthReport,
+  onFallback?: (from: ModelRunResult, to: ModelClient) => void,
+): Promise<ModelRunResult> {
+  let previous: ModelRunResult | null = null;
+  for (const [i, client] of chain.entries()) {
+    const run = await runModel(client, compiled, validTreePaths, health);
+    if (previous) {
+      run.fallbackFrom = { runtime: previous.runtime, modelId: previous.modelId, error: previous.error ?? previous.status };
+    }
+    const next = chain[i + 1];
+    if (run.status === "SUCCESS" || !next) return run;
+    logger.warn(`[${client.runtime}] ${run.status.toLowerCase()}, falling back to ${next.runtime} (${next.modelId})`);
+    onFallback?.(run, next);
+    previous = run;
+  }
+  throw new Error("runWithFallback requires at least one client.");
 }
 
 /* -------------------------------------------------------------------------- */

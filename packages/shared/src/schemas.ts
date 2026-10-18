@@ -242,8 +242,15 @@ export const LlmAuditOutputSchema = z.object({
 });
 export type LlmAuditOutput = z.infer<typeof LlmAuditOutputSchema>;
 
-export const ModelRuntimeSchema = z.enum(["OLLAMA_LOCAL", "GOOGLE_AI_STUDIO"]);
+export const ModelRuntimeSchema = z.enum(["OLLAMA_LOCAL", "GOOGLE_AI_STUDIO", "GROQ"]);
 export type ModelRuntime = z.infer<typeof ModelRuntimeSchema>;
+
+/** Short human label per runtime, shared by UI and reports. */
+export const RUNTIME_LABELS: Record<ModelRuntime, string> = {
+  OLLAMA_LOCAL: "Local · Ollama",
+  GOOGLE_AI_STUDIO: "Hosted · Google AI Studio",
+  GROQ: "Hosted fallback · Groq",
+};
 
 export const ModelTelemetrySchema = z.object({
   modelId: z.string(),
@@ -270,6 +277,10 @@ export const ModelRunResultSchema = z.object({
   quickWins: z.array(z.string()),
   verifiedFindings: z.array(AuditFindingSchema),
   quarantinedFindings: z.array(AuditFindingSchema),
+  /** Set when this result came from a fallback engine because the primary one failed. */
+  fallbackFrom: z
+    .object({ runtime: ModelRuntimeSchema, modelId: z.string(), error: z.string() })
+    .optional(),
 });
 export type ModelRunResult = z.infer<typeof ModelRunResultSchema>;
 
@@ -360,6 +371,11 @@ export const PreflightResponseSchema = z.object({
     error: z.string().optional(),
   }),
   googleAiStudio: z.object({
+    configured: z.boolean(),
+    model: z.string(),
+  }),
+  /** Hosted fallback used when Google AI Studio fails or is not configured. */
+  groq: z.object({
     configured: z.boolean(),
     model: z.string(),
   }),

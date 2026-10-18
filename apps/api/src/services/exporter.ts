@@ -1,4 +1,4 @@
-import type { AuditFinding, AuditResult, ModelRunResult } from "@reposage/shared";
+import { RUNTIME_LABELS, type AuditFinding, type AuditResult, type ModelRunResult } from "@reposage/shared";
 
 /** Neutralizes raw HTML in untrusted text so the report is safe in any Markdown renderer. */
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -32,7 +32,10 @@ function finding(f: AuditFinding, n: number): string {
 }
 
 function modelSection(run: ModelRunResult): string {
-  const out: string[] = [`### ${esc(run.modelId)} (${run.runtime === "OLLAMA_LOCAL" ? "Local · Ollama" : "Hosted · Google AI Studio"})`, ""];
+  const out: string[] = [`### ${esc(run.modelId)} (${RUNTIME_LABELS[run.runtime]})`, ""];
+  if (run.fallbackFrom) {
+    out.push(`> Fallback: ${esc(run.fallbackFrom.modelId)} was unavailable (${esc(run.fallbackFrom.error)}).`, "");
+  }
   if (run.status !== "SUCCESS") {
     out.push(`> **${run.status}:** ${esc(run.error ?? "No output")}`, "");
     return out.join("\n");

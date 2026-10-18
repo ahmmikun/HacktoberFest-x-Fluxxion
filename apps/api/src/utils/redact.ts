@@ -15,6 +15,8 @@ const SECRET_PATTERNS: RegExp[] = [
   /\b(?:AKIA|ASIA|AGPA|AIDA|AROA|ANPA|ANVA|AIPA)[0-9A-Z]{16}\b/g,
   // Google API keys
   /\bAIza[0-9A-Za-z_-]{35}\b/g,
+  // Groq API keys
+  /\bgsk_[A-Za-z0-9]{20,}\b/g,
   // Slack tokens & webhooks
   /\bxox[abposr]-[A-Za-z0-9-]{10,}\b/g,
   /https:\/\/hooks\.slack\.com\/services\/[A-Za-z0-9/_-]+/g,

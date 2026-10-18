@@ -9,13 +9,21 @@ import { GeminiClient } from "./geminiClient.js";
 import { GhCliBridge } from "./ghBridge.js";
 import { describeGitHubError } from "./github.js";
 import type { ModelClient } from "./modelClient.js";
+import { GroqClient } from "./groqClient.js";
 import { OllamaClient } from "./ollamaClient.js";
-import { buildConsensus, runModel } from "./orchestrator.js";
+import { buildConsensus, runWithFallback } from "./orchestrator.js";
 
-function clientsFor(mode: AuditSession["result"]["mode"]): ModelClient[] {
-  if (mode === "local") return [new OllamaClient()];
-  if (mode === "hosted") return [new GeminiClient()];
-  return [new OllamaClient(), new GeminiClient()];
+/**
+ * Engine chains per slot. Each slot runs its chain in order until one succeeds.
+ * Local Privacy Mode never falls back to a cloud provider; the hosted slot falls back
+ * from Google AI Studio (Gemma 4 26B) to Groq (gpt-oss-120b) when GROQ_API_KEY is set.
+ */
+function chainsFor(mode: AuditSession["result"]["mode"]): ModelClient[][] {
+  const local = [new OllamaClient()];
+  const hosted: ModelClient[] = [new GeminiClient(), ...(GroqClient.isConfigured() ? [new GroqClient()] : [])];
+  if (mode === "local") return [local];
+  if (mode === "hosted") return [hosted];
+  return [local, hosted];
 }
 
 /** Full audit pipeline. Streams stage events and never rejects (errors become an ERROR stage). */
@@ -68,21 +76,28 @@ export async function runAuditPipeline(session: AuditSession): Promise<void> {
       redactions: compiled.manifest.redactions,
     });
 
-    // 5. Gemma inference (parallel in compare mode, identical manifest bytes)
-    const clients = clientsFor(result.mode);
-    emitStage(session, "AI_INFERENCE", `Running ${clients.map((c) => c.modelId).join(" + ")}…`, {
-      models: clients.map((c) => ({ runtime: c.runtime, modelId: c.modelId })),
+    // 5. Model inference (slots run in parallel, every engine sees identical manifest bytes)
+    const chains = chainsFor(result.mode);
+    const primaries = chains.map((c) => c[0]!);
+    emitStage(session, "AI_INFERENCE", `Running ${primaries.map((c) => c.modelId).join(" + ")}…`, {
+      models: chains.map((c) => ({ runtime: c[0]!.runtime, modelId: c[0]!.modelId, fallbacks: c.slice(1).map((f) => f.modelId) })),
     });
     const runs: ModelRunResult[] = await Promise.all(
-      clients.map(async (client) => {
-        const run = await runModel(client, compiled, evidence.validTreePaths, health);
+      chains.map(async (chain) => {
+        const run = await runWithFallback(chain, compiled, evidence.validTreePaths, health, (failed, next) =>
+          emitStage(session, "AI_INFERENCE", `${failed.modelId} ${failed.status.toLowerCase()} (${failed.error}); falling back to ${next.modelId}…`, {
+            runtime: failed.runtime,
+            status: failed.status,
+            fallbackTo: next.runtime,
+          }),
+        );
         emitStage(
           session,
           "AI_INFERENCE",
           run.status === "SUCCESS"
-            ? `${client.modelId} responded in ${run.telemetry?.latencyMs} ms.`
-            : `${client.modelId} ${run.status.toLowerCase()}: ${run.error}`,
-          { runtime: client.runtime, status: run.status },
+            ? `${run.modelId} responded in ${run.telemetry?.latencyMs} ms${run.fallbackFrom ? " (fallback)" : ""}.`
+            : `${run.modelId} ${run.status.toLowerCase()}: ${run.error}`,
+          { runtime: run.runtime, status: run.status },
         );
         return run;
       }),
@@ -91,7 +106,7 @@ export async function runAuditPipeline(session: AuditSession): Promise<void> {
 
     // 6. Verification summary + consensus
     const local = runs.find((r) => r.runtime === "OLLAMA_LOCAL");
-    const hosted = runs.find((r) => r.runtime === "GOOGLE_AI_STUDIO");
+    const hosted = runs.find((r) => r.runtime !== "OLLAMA_LOCAL");
     if (result.mode === "compare" && local?.status === "SUCCESS" && hosted?.status === "SUCCESS") {
       result.consensus = buildConsensus(local.verifiedFindings, hosted.verifiedFindings);
     }
