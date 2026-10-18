@@ -1,2 +1,0 @@
-# Core dependencies (Optional for live HTTP querying; stdlib urllib is used as native zero-dependency fallback)
-requests>=2.28.0
