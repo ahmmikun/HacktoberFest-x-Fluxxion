@@ -1,29 +1,43 @@
 ---
 name: Feature Request
-about: Suggest an idea or enhancement for HacktoberFest-x-Fluxxion
+about: Suggest an enhancement or a new deterministic rule for RepoSage
 title: '[FEAT] '
 labels: ['enhancement']
 assignees: ''
 ---
 
 ## Feature Summary
-A clear and concise description of the proposed feature or capability.
+A clear and concise description of the proposed feature.
 
 ## Problem or Use Case
-Is your feature request related to a problem or open-source AI challenge requirement? Please explain.
-*Example: "I want to enable lightweight edge inference using Ollama so the model runs seamlessly offline on laptops without GPU requirements."*
+Which persona does this help (Open-Source Maintainer, Privacy-Conscious Staff Engineer, AI/DevEx Engineer), and what problem does it solve?
 
 ## Proposed Solution
-Describe the solution you'd like to see implemented. How should the API, agent skill, or CLI interact with the user or caller?
+How should it work? Include API, UI, or schema changes if you have them in mind.
 
-## Alternative Approaches Considered
-A clear and concise description of any alternative solutions, models, or features you've considered.
+## Area
+- [ ] New or changed **deterministic rule** (fill in the section below)
+- [ ] Evidence collection (new files or metadata)
+- [ ] Evidence Compiler / redaction / token budget
+- [ ] Gemma 4 orchestration or prompts
+- [ ] Citation Verifier / telemetry
+- [ ] Frontend dashboard / Model Comparison Arena
+- [ ] Reports, export, or GitHub actions
+- [ ] Agent Skill (`skills/`, Agent Skill Open Standard)
+- [ ] Documentation / specs
 
-## Open-Source AI Component Alignment
-- [ ] Agent Skill (complies with Agent Skill Open Standard)
-- [ ] Model Harness / Orchestrator adaptation
-- [ ] Open-Weight Model integration (e.g. Gemma, Hermes, Llama)
-- [ ] Performance / Evaluation tooling
+## Deterministic Rule Proposal (if applicable)
+- **Proposed `checkId`**: [e.g. `CI_EXPLICIT_PERMISSIONS`]
+- **Dimension**: CI/CD · Testing · Dependencies · Documentation · Security · Maintenance
+- **Evidence it reads**: [files or GraphQL fields]
+- **PASS / WARN / FAIL conditions**:
+- **When it should be skipped**: [e.g. evidence unavailable because of permissions]
+
+## Spec Impact
+Which documents in [`/docs`](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/tree/main/docs) would need updating? List any new or changed requirement IDs.
+
+## Alternatives Considered
+Other approaches you considered.
 
 ## Additional Context
-Add any other context, diagrams, paper references, or mockups here.
+Mockups, example repositories, or references.

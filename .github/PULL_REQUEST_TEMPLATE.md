@@ -1,42 +1,62 @@
 ## Description
-Briefly describe the purpose of this Pull Request and what changes were made.
+What does this pull request change, and why?
 
 Fixes / Closes #(issue number)
+
+**Requirement IDs addressed**: (e.g. `FR-DET-02`, `NFR-SEC-01`)
 
 ---
 
 ## Type of Change
-Please check the options that apply:
-- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
-- [ ] ✨ New feature (non-breaking change which adds functionality)
-- [ ] 📝 Documentation update
-- [ ] 🤖 AI Model integration / Agent Skill addition
-- [ ] ⚡ Performance improvement / Optimization
-- [ ] 🧹 Refactoring / Code cleanup
+- [ ] 🐛 Bug fix
+- [ ] ✨ New feature
+- [ ] 📏 New or changed deterministic rule
+- [ ] 🤖 Gemma 4 orchestration / prompts / Agent Skill
+- [ ] 📝 Documentation or spec update
+- [ ] ⚡ Performance improvement
+- [ ] 🧹 Refactoring
+
+## Workspaces Touched
+- [ ] `apps/web`
+- [ ] `apps/api`
+- [ ] `packages/shared`
+- [ ] `docs/`
+- [ ] `skills/`
 
 ---
 
-## Open-Source AI Challenge Compliance Checklist
-If this PR introduces or modifies AI functionality:
-- [ ] Uses open-source or open-weight AI (e.g. Gemma, Hermes, Llama, Ollama)
-- [ ] If introducing an Agent Skill, complies with the Agent Skill Open Standard (`SKILL.md` format)
-- [ ] If modifying a model harness, clearly attributes upstream work and documents modifications
-- [ ] Contains no proprietary closed API hardcoding where open alternatives exist
-- [ ] Free of hardcoded secrets, private tokens, or large binary weight files (`.bin`, `.safetensors`, `.gguf`)
+## RepoSage Engineering Checklist
+- [ ] `gh` is spawned only from `ghBridge.ts`, with `execFile` and argument arrays (no `exec()` or string-built commands)
+- [ ] No token or API key is logged, persisted, returned to the client, or exposed through `NEXT_PUBLIC_*`
+- [ ] Health Score logic does not depend on model output
+- [ ] Missing evidence produces a skipped state, not `FAIL`
+- [ ] Content that can reach Google AI Studio passes through the secret redactor
+- [ ] Repository content stays inside `<untrusted_repo_evidence>`, and model output is sanitized before rendering
+- [ ] New findings carry `evidenceRefs` that the Citation Verifier checks
+- [ ] Shared schemas changed in `packages/shared` first, with all consumers updated
+- [ ] Any GitHub write action requires explicit user confirmation
+
+## Open-Source AI Challenge Checklist
+- [ ] Uses open-weight Gemma 4 (or another open model); no closed model added as a default
+- [ ] Local Mode makes no outbound calls with repository content
+- [ ] New Agent Skills follow the Agent Skill Open Standard (`SKILL.md`)
+- [ ] Upstream harness or prompt code is attributed with its license
+- [ ] No hardcoded secrets or binary model weights (`.bin`, `.safetensors`, `.gguf`)
 
 ---
 
 ## Testing & Verification
-Describe the tests you ran to verify your changes:
-- [ ] Tested locally with unit tests or test scripts
-- [ ] Tested locally with running model / CLI / API endpoint
-- [ ] `git diff --check` passed with no whitespace or formatting errors
+- [ ] `npm run typecheck` passes
+- [ ] `npm run build` passes
+- [ ] Tests added or updated for affected acceptance criteria
+- [ ] Tested manually in mode(s): `local` / `hosted` / `compare` / deterministic-only
+- [ ] `git diff --check` passes
+
+Describe what you tested:
 
 ---
 
-## Checklist
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have updated the documentation where appropriate
-- [ ] I have added my name to [CONTRIBUTORS.md](CONTRIBUTORS.md) (optional, if you wish to be credited)
+## General Checklist
+- [ ] Self-reviewed my code
+- [ ] Updated `/docs`, README, or CHANGELOG where behavior changed
+- [ ] Added my name to [CONTRIBUTORS.md](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/blob/main/CONTRIBUTORS.md) (optional)

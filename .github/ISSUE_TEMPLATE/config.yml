@@ -1,11 +1,14 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Community Support & Questions
+  - name: RepoSage Specifications
+    url: https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/tree/main/docs
+    about: Requirements, architecture, and technology stack docs for RepoSage.
+  - name: Troubleshooting & Support
     url: https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/blob/main/SUPPORT.md
-    about: Read our support guide and community resources.
+    about: Fixes for gh authentication, Ollama, and Google AI Studio setup problems.
   - name: Security Vulnerability Reporting
     url: https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/blob/main/SECURITY.md
-    about: Learn how to report vulnerabilities privately without opening public issues.
+    about: Report vulnerabilities privately instead of opening public issues.
   - name: MLH Hacktoberfest Hack Day Lahore × Fluxxion Event
     url: https://events.mlh.com/events/15520-hacktoberfest-hack-day-lahore-x-fluxxion
     about: Official event details, schedule, and organizers.

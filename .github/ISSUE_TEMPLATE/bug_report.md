@@ -1,34 +1,58 @@
 ---
 name: Bug Report
-about: Create a report to help us improve HacktoberFest-x-Fluxxion
+about: Report a problem with RepoSage
 title: '[BUG] '
 labels: ['bug', 'triage']
 assignees: ''
 ---
 
+> [!WARNING]
+> Do not paste tokens, API keys, or private repository content. Report security issues privately as described in [SECURITY.md](https://github.com/ahmmikun/HacktoberFest-x-Fluxxion/blob/main/SECURITY.md).
+
 ## Bug Description
-A clear and concise description of what the bug is.
+A clear and concise description of the bug.
+
+## Affected Area
+- [ ] `apps/web` (frontend / UI)
+- [ ] `apps/api` – `GhCliBridge` / preflight
+- [ ] `apps/api` – Evidence Collector
+- [ ] `apps/api` – Deterministic Engine / Health Score
+- [ ] `apps/api` – Evidence Compiler / secret redaction
+- [ ] `apps/api` – Gemma orchestration (Ollama or AI Studio)
+- [ ] `apps/api` – Citation Verifier
+- [ ] SSE streaming, Markdown export, or issue creation
+- [ ] `packages/shared` schemas
+- [ ] Documentation
 
 ## Steps to Reproduce
-Steps to reproduce the behavior:
-1. Set up environment with `...`
-2. Run command `'...'`
-3. Pass input `'...'`
-4. See error: `...`
+1. Audited repository (public `owner/repo`, or describe a private one): `...`
+2. Execution mode: `local` / `hosted` / `compare`
+3. Action taken: `...`
+4. Error or unexpected result: `...`
 
 ## Expected Behavior
-A clear and concise description of what you expected to happen.
+What you expected to happen. If relevant, reference the requirement (for example `FR-VER-02`).
 
-## Environment Details
-- **OS**: [e.g. Windows 11, Ubuntu 22.04, macOS Sonoma]
-- **Runtime Version**: [e.g. Python 3.11, Node 20]
-- **Model Backend**: [e.g. Ollama 0.4.x, HuggingFace transformers, local vLLM]
-- **Model / Checkpoint Used**: [e.g. Gemma 2B, Hermes 3 8B]
+## Environment
+- **OS**: [e.g. Windows 11, Ubuntu 24.04, macOS 15]
+- **Node.js / npm**: [output of `node --version` and `npm --version`]
+- **GitHub CLI**: [output of `gh --version`]
+- **Ollama**: [version, or "not used"]
+- **Local model**: [e.g. `gemma4:e4b`]
+- **Hosted model**: [e.g. `gemma-4-26b-a4b-it`, or "not used"]
+- **Browser**: [e.g. Chrome 130]
+
+## Preflight Output
+Paste the response from `GET /api/v1/system/preflight` or a screenshot of the Preflight banner, with any token values removed.
+
+```json
+
+```
 
 ## Logs & Error Output
 ```text
-Paste any relevant terminal or log output here
+Paste relevant API or browser console output here (with secrets removed)
 ```
 
 ## Additional Context
-Add any other context about the problem here (e.g., hardware specifications, GPU/CPU execution, memory usage).
+For example `manifestSha256`, the affected `checkId`, or the finding ID.
