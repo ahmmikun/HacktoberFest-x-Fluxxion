@@ -19,7 +19,7 @@
 | **Token Risk:** Requires pasting personal access tokens (PATs) into web UIs. | **Zero-PAT Friction:** Natively bridges to your authenticated `gh` CLI session in-memory. Zero tokens saved or logged. |
 | **Hallucinated Audits:** LLMs invent non-existent file paths and phantom vulnerabilities. | **Anti-Hallucination Gate:** Citation Verifier validates every AI claim against the recursive Git tree. Fake claims are quarantined. |
 | **Black Box Cloud Only:** Forces proprietary models, sending sensitive private IP to external clouds. | **Dual-Runtime Open-Weight AI:** Runs `Gemma 4 E4B` 100% locally on Ollama (air-gapped privacy) or `Gemma 4 26B` for deep analysis. |
-| **Vague Advice:** Outputs long conversational text with no actionable follow-up. | **1-Click GitHub Remediation:** Converts verified architectural findings directly into GitHub Issues via `gh issue create`. |
+| **Vague Advice:** Outputs long conversational text with no actionable follow-up. | **1-Click GitHub Issues & Turnkey AI Fix Prompts:** Converts verified findings into real GitHub Issues in 1 click, or generates tailored remediation prompts for Claude Code, Cursor, Aider, and LLMs. |
 
 ---
 
@@ -70,6 +70,9 @@
 5. **1-Click GitHub Remediation (15s)**
    - Click **"Create GitHub Issue"** on a high-priority finding.
    - Converts the verified finding into a formatted, actionable issue directly on GitHub through the CLI bridge.
+6. **Turnkey AI Agent Fix Prompts (15s)**
+   - Click **"AI Fix Prompt"** or **"Copy Fix Prompt"** on any finding.
+   - Generates a detailed, evidence-grounded remediation prompt ready to paste into **Claude Code, Devin, Roo Code, Cursor Composer (`@file`), Aider CLI (`/add`), or ChatGPT/Gemini** to fix issues automatically and boost the health score to 100/100.
 
 ---
 

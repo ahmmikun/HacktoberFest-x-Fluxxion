@@ -3,6 +3,8 @@ import type {
   AuditResult,
   CreateAuditResponse,
   CreateIssueResponse,
+  FixPromptOptions,
+  GeneratedFixPrompt,
   ModelRuntime,
   PreflightResponse,
   RepoListResponse,
@@ -67,6 +69,12 @@ export const api = {
   exportMarkdown: (auditId: string) =>
     request<string>(`/audits/${encodeURIComponent(auditId)}/export`, { method: "POST" }, "text"),
 
+  getFixPrompt: (auditId: string, options?: Partial<FixPromptOptions>) =>
+    request<GeneratedFixPrompt>(`/audits/${encodeURIComponent(auditId)}/fix-prompt`, {
+      method: "POST",
+      body: JSON.stringify(options ?? {}),
+    }),
+
   createIssue: (auditId: string, modelRuntime: ModelRuntime, findingId: string) =>
     request<CreateIssueResponse>("/actions/create-issue", {
       method: "POST",
@@ -75,3 +83,4 @@ export const api = {
 
   streamUrl: (auditId: string) => `${API_BASE}/audits/${encodeURIComponent(auditId)}/stream`,
 };
+

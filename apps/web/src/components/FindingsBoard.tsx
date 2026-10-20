@@ -1,18 +1,23 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Lightbulb, ShieldAlert, TriangleAlert, Zap } from "lucide-react";
+import { Lightbulb, ShieldAlert, Sparkles, TriangleAlert, Zap } from "lucide-react";
 import { RUNTIME_LABELS, type AuditResult, type FindingCategory, type ModelRunResult, type Severity } from "@reposage/shared";
 import { FindingCard } from "./FindingCard";
-import { Badge, Card, cx } from "./ui";
+import { Badge, Button, Card, cx } from "./ui";
 
 const SEVERITIES: Array<Severity | "ALL"> = ["ALL", "CRITICAL", "HIGH", "MEDIUM", "LOW"];
 const CATEGORIES: Array<FindingCategory | "ALL"> = ["ALL", "CI_CD", "TESTING", "DEPENDENCIES", "DOCUMENTATION", "SECURITY", "MAINTENANCE"];
 
 const runtimeLabel = (r: ModelRunResult) => `${RUNTIME_LABELS[r.runtime]} · ${r.modelId}`;
 
+interface Props {
+  audit: AuditResult;
+  onOpenPromptModal?: (findingId?: string) => void;
+}
+
 /** Filterable VERIFIED findings + quarantine toggle for unverified claims. */
-export function FindingsBoard({ audit }: { audit: AuditResult }) {
+export function FindingsBoard({ audit, onOpenPromptModal }: Props) {
   const runs = audit.models;
   const [active, setActive] = useState(0);
   const [severity, setSeverity] = useState<Severity | "ALL">("ALL");
@@ -29,7 +34,22 @@ export function FindingsBoard({ audit }: { audit: AuditResult }) {
   if (!run) return null;
 
   return (
-    <Card title="AI findings (citation-verified)">
+    <Card
+      title="AI findings (citation-verified)"
+      actions={
+        onOpenPromptModal && (
+          <Button
+            variant="secondary"
+            onClick={() => onOpenPromptModal()}
+            className="border-amber-500/40 bg-amber-500/10 text-amber-200 hover:border-amber-400 hover:bg-amber-500/20"
+            title="Generate a full turnkey prompt for any LLM or AI coding agent to fix these findings"
+          >
+            <Sparkles className="h-4 w-4 text-amber-400" aria-hidden="true" />
+            AI Fix Prompt
+          </Button>
+        )
+      }
+    >
       {runs.length > 1 && (
         <div role="tablist" aria-label="Model" className="mb-4 flex gap-1 border-b border-zinc-800">
           {runs.map((r, i) => (
@@ -97,6 +117,33 @@ export function FindingsBoard({ audit }: { audit: AuditResult }) {
             )}
           </div>
 
+          {run.verifiedFindings.length > 0 && onOpenPromptModal && (
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-950/30 via-zinc-900 to-sky-950/20 p-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400">
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-zinc-100">
+                    Need an AI agent to fix these findings?
+                    <Badge tone="amber">Turnkey Prompt</Badge>
+                  </div>
+                  <p className="text-[11px] text-zinc-400">
+                    Generate an evidence-grounded prompt tailored for Claude Code, Cursor, Aider, or ChatGPT to resolve these issues automatically.
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="secondary"
+                onClick={() => onOpenPromptModal()}
+                className="border-amber-500/40 text-xs text-amber-200 hover:border-amber-400 hover:bg-amber-500/10"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
+                Generate Fix Prompt
+              </Button>
+            </div>
+          )}
+
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <label className="text-xs text-zinc-400" htmlFor="sev-filter">
               Severity
@@ -133,10 +180,21 @@ export function FindingsBoard({ audit }: { audit: AuditResult }) {
 
           <div className="space-y-3">
             {findings.map((f) => (
-              <FindingCard key={f.id} finding={f} auditId={audit.auditId} runtime={run.runtime} repo={audit.repo} repoUrl={audit.metadata?.url} headSha={audit.metadata?.headSha} />
+              <FindingCard
+                key={f.id}
+                finding={f}
+                auditId={audit.auditId}
+                runtime={run.runtime}
+                repo={audit.repo}
+                repoUrl={audit.metadata?.url}
+                headSha={audit.metadata?.headSha}
+                audit={audit}
+                onOpenPromptModal={onOpenPromptModal}
+              />
             ))}
             {findings.length === 0 && <p className="py-6 text-center text-sm text-zinc-400">{showQuarantine ? "No unverified claims — clean run." : "No findings match the filters."}</p>}
           </div>
+
         </>
       )}
     </Card>

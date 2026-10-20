@@ -3,9 +3,10 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, FileDown, GitBranch, LoaderCircle, Lock, RotateCcw } from "lucide-react";
+import { ArrowLeft, FileDown, GitBranch, LoaderCircle, Lock, RotateCcw, Sparkles } from "lucide-react";
 import { AuditModeSchema, REPO_SLUG_REGEX, type AuditMode } from "@reposage/shared";
 import { FindingsBoard } from "@/components/FindingsBoard";
+import { FixPromptModal } from "@/components/FixPromptModal";
 import { HealthScoreCard } from "@/components/HealthScoreCard";
 import { LivePipelineStepper } from "@/components/LivePipelineStepper";
 import { MarkdownPreviewModal } from "@/components/MarkdownPreviewModal";
@@ -29,6 +30,8 @@ function AuditWorkspace() {
   const [auditId, setAuditId] = useState<string | null>(urlAuditId);
   const [startError, setStartError] = useState<string | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
+  const [promptOpen, setPromptOpen] = useState(false);
+  const [selectedPromptFindingId, setSelectedPromptFindingId] = useState<string | null>(null);
   const startedFor = useRef<string | null>(null);
 
   // Start a new audit once per (repo, mode) unless the URL already carries an auditId.
@@ -63,6 +66,11 @@ function AuditWorkspace() {
     router.replace(`/audit/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.repo)}?mode=${mode}`, { scroll: false });
   };
 
+  const openPromptModal = (findingId?: string) => {
+    setSelectedPromptFindingId(findingId ?? null);
+    setPromptOpen(true);
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -93,9 +101,18 @@ function AuditWorkspace() {
             </p>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button onClick={rerun} disabled={!done}>
             <RotateCcw className="h-4 w-4" aria-hidden="true" /> Re-run
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => openPromptModal()}
+            disabled={!done || !result}
+            className="border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-orange-500/10 text-amber-200 shadow-sm hover:border-amber-400 hover:from-amber-500/25"
+            title="Generate a detailed, evidence-grounded prompt to fix this repository with an AI agent or LLM"
+          >
+            <Sparkles className="h-4 w-4 text-amber-400" aria-hidden="true" /> AI Fix Prompt
           </Button>
           <Button variant="primary" onClick={() => setReportOpen(true)} disabled={!done || !auditId}>
             <FileDown className="h-4 w-4" aria-hidden="true" /> Export Markdown
@@ -136,7 +153,7 @@ function AuditWorkspace() {
 
       {result && result.models.length > 0 && (
         <>
-          <FindingsBoard audit={result} />
+          <FindingsBoard audit={result} onOpenPromptModal={openPromptModal} />
           <ModelComparisonArena audit={result} />
         </>
       )}
@@ -150,8 +167,17 @@ function AuditWorkspace() {
       )}
 
       {auditId && <MarkdownPreviewModal auditId={auditId} repo={slug} open={reportOpen} onClose={() => setReportOpen(false)} />}
+      {result && (
+        <FixPromptModal
+          audit={result}
+          open={promptOpen}
+          onClose={() => setPromptOpen(false)}
+          initialFindingId={selectedPromptFindingId}
+        />
+      )}
     </div>
   );
+
 }
 
 export default function AuditPage() {

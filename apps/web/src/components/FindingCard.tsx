@@ -1,8 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, FileCode, GitPullRequestCreate, Hash, LoaderCircle, ShieldAlert, ShieldCheck } from "lucide-react";
-import type { AuditFinding, ModelRuntime } from "@reposage/shared";
+import {
+  Bot,
+  Check,
+  ExternalLink,
+  FileCode,
+  GitPullRequestCreate,
+  Hash,
+  LoaderCircle,
+  ShieldAlert,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
+import {
+  generateFindingFixPrompt,
+  type AuditFinding,
+  type AuditResult,
+  type ModelRuntime,
+} from "@reposage/shared";
 import { api } from "@/lib/api";
 import { Modal } from "./Modal";
 import { Badge, Button, cx, SEVERITY_TONE } from "./ui";
@@ -14,18 +30,75 @@ interface Props {
   repo: string;
   repoUrl?: string;
   headSha?: string | null;
+  audit?: AuditResult;
+  onOpenPromptModal?: (findingId: string) => void;
 }
 
 /** Severity, citation badges, remediation steps and the confirmed "Create gh Issue" action (FR-ACT-03). */
-export function FindingCard({ finding, auditId, runtime, repo, repoUrl, headSha }: Props) {
+export function FindingCard({ finding, auditId, runtime, repo, repoUrl, headSha, audit, onOpenPromptModal }: Props) {
   const verified = finding.verificationStatus === "VERIFIED";
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [issueUrl, setIssueUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [promptCopied, setPromptCopied] = useState(false);
 
   const fileUrl = (path: string) =>
     repoUrl && headSha && path !== "REPO_ROOT" ? `${repoUrl}/blob/${headSha}/${path.split("/").map(encodeURIComponent).join("/")}` : null;
+
+  const copyFixPrompt = () => {
+    const baseAudit: AuditResult = audit ?? {
+      auditId,
+      repo,
+      mode: "hosted",
+      createdAt: new Date().toISOString(),
+      completedAt: null,
+      metadata: repoUrl
+        ? {
+            nameWithOwner: repo,
+            description: null,
+            url: repoUrl,
+            isArchived: false,
+            isDisabled: false,
+            isPrivate: false,
+            isFork: false,
+            pushedAt: null,
+            lastCommitAt: null,
+            defaultBranch: null,
+            headSha: headSha ?? null,
+            stars: 0,
+            forks: 0,
+            license: null,
+            languages: [],
+            openIssues: 0,
+            closedIssues: 0,
+            openPullRequests: 0,
+            closedPullRequests: 0,
+            mergedPullRequests: 0,
+            branchProtection: null,
+            branchProtectionVisible: false,
+            hasIssuesEnabled: true,
+            securityPolicyUrl: null,
+            contributingUrl: null,
+            viewerPermission: null,
+            openIssueSample: [],
+          }
+        : null,
+      health: null,
+      manifestSha256: null,
+      manifestTokenEstimate: null,
+      models: [],
+      consensus: [],
+      treeFileCount: null,
+      treeTruncated: false,
+    };
+
+    const res = generateFindingFixPrompt(baseAudit, finding, { preset: "agent" });
+    void navigator.clipboard.writeText(res.prompt).then(() => {
+      setPromptCopied(true);
+      setTimeout(() => setPromptCopied(false), 2000);
+    });
+  };
 
   const createIssue = async () => {
     setCreating(true);
@@ -106,21 +179,56 @@ export function FindingCard({ finding, auditId, runtime, repo, repoUrl, headSha 
         </ul>
       )}
 
-      {verified && (
-        <footer className="flex flex-wrap items-center gap-2">
-          {issueUrl ? (
-            <a href={issueUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-emerald-300 underline">
-              <ExternalLink className="h-4 w-4" aria-hidden="true" /> Issue created
-            </a>
+      <footer className="flex flex-wrap items-center gap-2 border-t border-zinc-800/80 pt-3">
+        {verified && (
+          <>
+            {issueUrl ? (
+              <a href={issueUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-emerald-300 underline">
+                <ExternalLink className="h-4 w-4" aria-hidden="true" /> Issue created
+              </a>
+            ) : (
+              <Button onClick={() => setConfirmOpen(true)}>
+                <GitPullRequestCreate className="h-4 w-4" aria-hidden="true" />
+                Create gh Issue
+              </Button>
+            )}
+          </>
+        )}
+
+        <Button
+          variant="secondary"
+          onClick={copyFixPrompt}
+          title="Copy a prompt specifically formatted to fix this finding in Claude, Cursor, or ChatGPT"
+          className="border-amber-500/30 hover:border-amber-400 hover:bg-amber-950/20"
+        >
+          {promptCopied ? (
+            <>
+              <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+              <span className="text-emerald-300">Prompt Copied!</span>
+            </>
           ) : (
-            <Button onClick={() => setConfirmOpen(true)}>
-              <GitPullRequestCreate className="h-4 w-4" aria-hidden="true" />
-              Create gh Issue
-            </Button>
+            <>
+              <Sparkles className="h-4 w-4 text-amber-400" aria-hidden="true" />
+              Copy Fix Prompt
+            </>
           )}
-          {error && !confirmOpen && <span className="text-xs text-red-300">{error}</span>}
-        </footer>
-      )}
+        </Button>
+
+        {onOpenPromptModal && (
+          <Button
+            variant="ghost"
+            onClick={() => onOpenPromptModal(finding.id)}
+            title="Open in AI Agent Prompt Generator"
+            className="text-zinc-300 hover:text-amber-200"
+          >
+            <Bot className="h-4 w-4 text-sky-400" aria-hidden="true" />
+            Agent Studio
+          </Button>
+        )}
+
+        {error && !confirmOpen && <span className="text-xs text-red-300">{error}</span>}
+      </footer>
+
 
       <Modal open={confirmOpen} onClose={() => !creating && setConfirmOpen(false)} title="Create GitHub issue?">
         <p className="mb-2 text-sm text-zinc-300">

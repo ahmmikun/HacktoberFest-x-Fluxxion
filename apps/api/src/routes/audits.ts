@@ -1,6 +1,12 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { CreateAuditRequestSchema, type CreateAuditResponse } from "@reposage/shared";
+import {
+  CreateAuditRequestSchema,
+  FixPromptOptionsSchema,
+  generateFindingFixPrompt,
+  generateRemediationPrompt,
+  type CreateAuditResponse,
+} from "@reposage/shared";
 import { activeSessionCount, createSession, getSession, type SseMessage } from "../services/auditStore.js";
 import { renderMarkdownReport } from "../services/exporter.js";
 import { runAuditPipeline } from "../services/pipeline.js";
@@ -92,3 +98,50 @@ auditsRouter.post("/:id/export", (req, res) => {
     })
     .send(markdown);
 });
+
+/** POST /api/v1/audits/:id/fix-prompt — generates a turnkey AI agent / LLM fix prompt. */
+auditsRouter.post("/:id/fix-prompt", (req, res) => {
+  const session = requireSession(req.params.id);
+  const parsed = FixPromptOptionsSchema.safeParse(req.body ?? {});
+  const options = parsed.success ? parsed.data : undefined;
+
+  let result;
+  if (options?.scope === "single" && options.selectedFindingId) {
+    const run = options.preferredRuntime
+      ? session.result.models.find((m) => m.runtime === options.preferredRuntime)
+      : session.result.models.find((m) => m.status === "SUCCESS") ?? session.result.models[0];
+    const finding = run?.verifiedFindings.find((f) => f.id === options.selectedFindingId);
+    if (finding) {
+      result = generateFindingFixPrompt(session.result, finding, options);
+    } else {
+      result = generateRemediationPrompt(session.result, options);
+    }
+  } else {
+    result = generateRemediationPrompt(session.result, options);
+  }
+
+  if (req.query.format === "download" || req.query.download === "true") {
+    const fileName = `reposage-fix-prompt-${session.result.repo.replace(/[^a-zA-Z0-9_.-]+/g, "_")}-${session.result.auditId.slice(0, 8)}.md`;
+    res
+      .status(200)
+      .set({
+        "content-type": "text/markdown; charset=utf-8",
+        "content-disposition": `attachment; filename="${fileName}"`,
+        "cache-control": "no-store",
+      })
+      .send(result.prompt);
+    return;
+  }
+
+  res.status(200).json(result);
+});
+
+/** GET /api/v1/audits/:id/fix-prompt — simple query-based prompt generation. */
+auditsRouter.get("/:id/fix-prompt", (req, res) => {
+  const session = requireSession(req.params.id);
+  const preset = req.query.preset as any;
+  const scope = req.query.scope as any;
+  const result = generateRemediationPrompt(session.result, { preset, scope });
+  res.status(200).json(result);
+});
+
